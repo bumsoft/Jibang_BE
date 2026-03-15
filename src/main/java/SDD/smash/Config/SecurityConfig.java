@@ -84,8 +84,8 @@ public class SecurityConfig {
                 .formLogin((formLogin) -> formLogin.disable());
 
 
-        http
-                .addFilterBefore(new ApiRateLimitFilter(apiRateLimitService, env, ipSecret), UsernamePasswordAuthenticationFilter.class);
+        // http
+        //         .addFilterBefore(new ApiRateLimitFilter(apiRateLimitService, env, ipSecret), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
