@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.nio.charset.StandardCharsets;
@@ -87,14 +88,16 @@ public class MolitAptRentAdapter {
     }
 
     private JsonNode parseJsonWithXmlFallback(@Nullable MediaType ct, String body) {
+        if (body == null || body.isBlank()) {
+            throw new RestClientException("MOLIT returned an empty response");
+        }
         try {
             if ((ct != null && MediaType.APPLICATION_JSON.includes(ct)) || looksLikeJson(body)) {
                 return objectMapper.readTree(body);
             }
             return xmlMapper.readTree(body.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
-            log.warn("parseJsonWithXmlFallback failed: {}", e.getMessage());
-            return objectMapper.createObjectNode();
+            throw new RestClientException("Cannot parse MOLIT response", e);
         }
     }
 
@@ -102,8 +105,32 @@ public class MolitAptRentAdapter {
      * aptNm, jibum, deposit, monthlyRent 만 추출
      * */
     private List<RentRecord> extractRecords(JsonNode root) {
-        JsonNode items = root.at("/response/body/items/item");
-        if (items == null || items.isMissingNode()) return List.of();
+        if (root == null) {
+            throw new RestClientException("MOLIT response is missing");
+        }
+        // XmlMapper exposes children of <response> directly; JSON may retain the wrapper.
+        JsonNode response = root.has("response") ? root.path("response") : root;
+        String resultCode = response.path("header").path("resultCode").asText("").trim();
+        if (!"000".equals(resultCode) && !"00".equals(resultCode)) {
+            throw new RestClientException("MOLIT response did not report success: code=" + resultCode);
+        }
+        JsonNode body = response.path("body");
+        long totalCount;
+        try {
+            totalCount = Long.parseLong(body.path("totalCount").asText("").trim());
+        } catch (NumberFormatException e) {
+            throw new RestClientException("MOLIT response has no valid totalCount", e);
+        }
+        if (totalCount < 0) {
+            throw new RestClientException("MOLIT response has a negative totalCount");
+        }
+        if (totalCount == 0) {
+            return List.of();
+        }
+        JsonNode items = body.path("items").path("item");
+        if ((!items.isArray() && !items.isObject()) || items.isEmpty()) {
+            throw new RestClientException("MOLIT response contains a count but no records");
+        }
 
         List<RentRecord> list = new ArrayList<>();
         if (items.isArray()) {
