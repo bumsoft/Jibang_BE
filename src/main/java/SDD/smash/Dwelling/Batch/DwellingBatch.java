@@ -69,6 +69,8 @@ public class DwellingBatch {
                 .faultTolerant()
                 .retry(org.springframework.web.client.ResourceAccessException.class) // Read timed out 포함
                 .retry(java.net.SocketTimeoutException.class)
+                .retry(org.springframework.web.client.HttpServerErrorException.class)
+                .retry(org.springframework.web.client.HttpClientErrorException.TooManyRequests.class)
                 .retryLimit(3)
                 .backOffPolicy(new FixedBackOffPolicy() {{ setBackOffPeriod(1000L); }})
                 .build();

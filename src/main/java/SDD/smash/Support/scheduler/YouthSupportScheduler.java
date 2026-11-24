@@ -28,12 +28,8 @@ public class YouthSupportScheduler {
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisTemplate<String, SupportListDTO> listRedisTemplate;
 
-    /**
-     * 이후 3일 간격으로 반복 수행
-     * initialDelay=0으로 컨텍스트 시작 직후 실행 => 개발시에는 불필요한 트래픽을 줄이기위해 사용x
-     * initialDelayString = (day1)으로 시작 후 1일 뒤 스케줄링 시작(개발용)
-     */
-    @Scheduled(initialDelay = 0,
+    /** 최초 실행 지연은 설정값(ms), 이후에는 이전 작업 종료 후 3일 간격으로 실행한다. */
+    @Scheduled(initialDelayString = "${support.refresh.initial-delay-ms:0}",
             fixedDelayString = "#{T(java.time.Duration).ofDays(3).toMillis()}")
     public void runJob()
     {

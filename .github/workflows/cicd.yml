@@ -1,8 +1,8 @@
 name: ci-cd-docker
 
 on:
-  push:
-    branches: ["main"] # PR 머지 후 main으로 push되면 실행
+  # 자동 CI/CD 중지. 필요 시 워크플로를 활성화한 후 수동 실행한다.
+  workflow_dispatch:
 
 permissions:
   contents: read
