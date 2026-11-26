@@ -41,7 +41,8 @@
 ---
 
 ## 🏗️ 시스템 아키텍처
-<img width="7328" height="4580" alt="image" src="https://github.com/user-attachments/assets/c0d8c8f4-de75-4b15-b773-f85703236e34" />
+<img width="2400" height="1500" alt="image" src="https://github.com/user-attachments/assets/106a6891-236a-4487-9e58-e39e793b9d23" />
+
 
 
 
@@ -64,9 +65,10 @@
 - 공공데이터 API (고용24, 국토교통부, LOCALDATA 등)에서 실시간 정보 수집
 
 ### 🔹 인프라
-- **AWS API Gateway**를 통해 트래픽 관리
-- **Nginx**로 리버스 프록시 및 보안 구성
-- **GitHub Actions**를 이용한 CI/CD
+- **AWS EC2**에서 Docker 기반 백엔드 서버 운영
+- **Nginx**를 리버스 프록시로 사용하여 Spring Boot로 API 요청 전달
+- **Let’s Encrypt**에서 발급받은 TLS 인증서를 **Nginx**에 적용하여 HTTPS 구성
+- **GitHub Actions**와 **Docker Hub**를 이용한 빌드 및 배포 자동화
 
 ---
 
