@@ -79,8 +79,8 @@
 | Frontend | React, TypeScript, Tailwind CSS, Vite |
 | Backend | Spring Boot, Docker, Redis |
 | Database | Amazon RDS (MySQL) |
-| Infra | AWS EC2, API Gateway, Nginx, Vercel |
-| CI/CD | GitHub Actions |
+| Infra | AWS EC2, AWS ElastiCache, Nginx, Vercel |
+| CI/CD | GitHub Actions, Docker Hub |
 | Data Source | 공공데이터포털 API (고용24, 국토교통부, LOCALDATA 등) |
 
 ---
